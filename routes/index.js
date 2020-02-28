@@ -128,35 +128,32 @@ router.post('/api/register', function(req, res, next) {
 router.post('/api/getFingerprint',async function(req, res, next) {
   let fingerPrintList = [];
   const getFingerPrintIndex = await seachOdoo('employee.fingerprint', [['id','>',-1]]);
-  if(getFingerPrintIndex && getFingerPrintIndex.length){
-    let count = getFingerPrintIndex.length;
-    for(let x = 0; x < count; x++){
-      const result = await getSingleFingerPrint(getFingerPrintIndex[x]);
-      if(result){
-        fingerPrintList.push(result);
-      }
+  let count = getFingerPrintIndex.length;
+  for(let x = 0; x < count; x++){
+    const result = await getSingleFingerPrint(getFingerPrintIndex[x]);
+    if(result){
+      fingerPrintList.push(result);
     }
-    let response = {
-      userlist: [],
-      userdata:[]
-    }
-    const getEmployeeID = await seachOdoo('hr.employee', [['id','>',-1]]);
-    if(getEmployeeID && getEmployeeID.length){
-      const count = getEmployeeID.length;
-      for(let x = 0; x < count; x++){
-        const getEmployeeData = await getOdoo('hr.employee',getEmployeeID[x]);
-        if(getEmployeeData && getEmployeeData.length){
-          let localdata = {}
-          localdata.id = getEmployeeData[0].id;
-          localdata.name = getEmployeeData[0].name;
-          response.userlist.push(localdata);
-          response.userdata.push(getEmployeeData[0].name);
-        }
-      }
-    }
-    res.send({fingerprint: fingerPrintList, userlist:response.userlist, userdata:response.userdata});
   }
-
+  let response = {
+    userlist: [],
+    userdata:[]
+  }
+  const getEmployeeID = await seachOdoo('hr.employee', [['id','>',-1]]);
+  if(getEmployeeID && getEmployeeID.length){
+    const count = getEmployeeID.length;
+    for(let x = 0; x < count; x++){
+      const getEmployeeData = await getOdoo('hr.employee',getEmployeeID[x]);
+      if(getEmployeeData && getEmployeeData.length){
+        let localdata = {}
+        localdata.id = getEmployeeData[0].id;
+        localdata.name = getEmployeeData[0].name;
+        response.userlist.push(localdata);
+        response.userdata.push(getEmployeeData[0].name);
+      }
+    }
+  }
+  res.send({fingerprint: fingerPrintList, userlist:response.userlist, userdata:response.userdata});
 });
 
 router.post('/api/login', async function(req, res, next) {
@@ -220,6 +217,8 @@ const seachOdoo = function(model, condition){
   return new Promise( function(resolve, reject){
     __odoo.search(model, condition, function (err, response) {
       if(err){
+        console.log("============= error ============");
+        console.log(err);
         reject(err);
       }else{
         resolve(response);
