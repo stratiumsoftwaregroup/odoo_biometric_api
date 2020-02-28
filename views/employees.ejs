@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function(){
+            const form = $('#post_form');
+            const query = {
+                getEmployees: async function(){
+					var data = [1, 12];
+                    var post =  await $.post('/odoo/employees', {data: data}).done();
+                    if(post){
+                        let employees = post.result;
+                        for(var i=0;i < employees.length; i++){
+                            employee = employees[i];
+                            if(i === 1){
+                                const object = Object.keys(employee);
+                                const count = object.length;
+                                for(let x =0; x < count; x++){
+                                    const index = object[x];
+                                    form.find(`input[id=${index}]`).val(employee[index]);
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            query.getEmployees();
+
+            form.on('submit', function(e){
+                const input = {}
+                $(this).find('input[type=text]').each(function(){
+                    const id = $(this).attr('id');
+                    const value = $(this).val();
+                    input[id] = value;
+                })
+
+                console.log(input);
+                
+                e.preventDefault();
+                // update.updateEmployees();
+            })
+        });
+    </script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <div class="targeted"></div>
+    <div class="container-fluid">
+        <form id="post_form">
+            <div class="form-group" id="name"></div>
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter name">
+                <label for="barcode">Barcode</label>
+                <input type="text" class="form-control" id="barcode" placeholder="Enter barcode">
+                <label for="biometric">Biometric</label>
+                <input type="text" class="form-control" id="biometric" placeholder="Enter biometric">
+                <label for="scan1">Scan1</label>
+                <input type="text" class="form-control" id="scan1" placeholder="Enter scan1" >
+                <label for="scan2">Scan2</label>
+                <input type="text" class="form-control" id="scan2" placeholder="Enter scan2" >
+                <label for="scan3">Scan3</label>
+                <input type="text" class="form-control" id="scan3" placeholder="Enter scan3">
+                <br>     
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+  </body>
+</html>

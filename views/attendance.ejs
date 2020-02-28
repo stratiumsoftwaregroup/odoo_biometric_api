@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function(){
+            const query = {
+                getEmployees: async function(){
+					var data = [1,2,3,4,5,12];
+                    var post =  await $.post('/odoo/employees', {data: data}).done();
+                    if(post){
+                        let employees = post.result;
+                        for(var i=0;i < employees.length; i++){
+                            employee = employees[i];
+                            $('.targeted').append(`
+                                <input type="radio" name="employee_id" value="${employee.id}"> ${employee.name}
+                                <br><br>
+                                `);
+                        }
+                    }
+                }
+            };
+            query.getEmployees();
+
+            $("#check_attnd").click(function(){
+                const selected_id = $('.targeted').find('input[type=radio]:checked').val();
+
+                const check_query = {
+                    checkAttendance: async function(){
+                        var post =  await $.post('/odoo/attendance/check', {id: selected_id}).done();
+                        if(post){
+                            if (post.checked_id){
+                                const checkout_query = {
+                                    checkoutEmployee: async function(){
+                                        var post =  await $.post('/odoo/attendance/checkout', {id: selected_id}).done();
+                                        if(post){
+                                            alert('Checked Out');
+                                        }
+                                    }
+                                };
+                                checkout_query.checkoutEmployee();
+                            }else{
+                                const checkin_query = {
+                                    checkinEmployee: async function(){
+                                        var post =  await $.post('/odoo/attendance/checkin', {id: selected_id}).done();
+                                        console.log(post);
+                                        if(post){
+                                            console.log('Checked');
+                                            alert('Checked In');
+                                        }
+                                    }
+                                };
+                                checkin_query.checkinEmployee();
+                            }
+                        }                        
+                    }
+                };
+                check_query.checkAttendance();
+            });
+            
+            const query_fingerprint = {
+                getPrint: async function(){
+                    var post =  await $.post('/odoo/attendance/fingerprint', {data: 1}).done();
+                    if(post){
+                        console.log(post);
+                    }
+                }
+            };
+            query_fingerprint.getPrint();
+        });
+    </script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <div class="targeted"></div>
+    <button id="check_attnd">Attendance</button>
+    <div class="attendance_res"></div>
+  </body>
+</html>
