@@ -205,7 +205,7 @@ const updateOdoo = function(model, id, param){
 
 const createOdoo = function(model, param){
   return new Promise(function(resolve, reject){
-    console.log("=+++++==+++=+===+++",model, param);0
+    console.log("=+++++==+++=+===+++",model, param);
     __odoo.create(model, param, function (err, employee){
       if (!err){ 
         resolve({status: true, data: employee});
