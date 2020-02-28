@@ -17,47 +17,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/sample', function(req, res, next) {
-  res.render('sample', { title: 'Sample' });
-});
-
-router.get('/employees', function(req, res, next) {
-  res.render('employees', { title: 'Employees' });
-});
-
-router.get('/attendance', function(req, res, next) {
-  res.render('attendance', { title: 'Attendance' });
-});
-
 router.post('/odoo/employees', function(req, res, next) {
   const post = req.body;
   let data = detectNumeric(post['data[]']);
-
-  // __odoo.get('hr.employee', data, function (err, employee) {
-  //   console.log('data', data);
-  //   console.log('employee', employee.length);
-  //   if (err) { return console.log(err); }
-  //   const arr = []
-    
-  //   for (var i = 0; i < employee.length; i++) { 
-  //     const e = {
-  //       id: employee[i].id,
-  //       name: employee[i].name,
-  //       barcode: employee[i].barcode,
-  //       user_id: employee[i].user_id,
-  //       // biometric_id: employee[i].biometric_id,
-  //       // scan1: employee[i].scan1,
-  //       // scan2: employee[i].scan2,
-  //       // scan3: employee[i].scan3,
-  //     };
-  //     arr.push(e);
-  //   }
-  //   res.send({result: arr});
-  //   console.log(arr);
-  // });
-
   var params = [['id','>',-1]];
-
   __odoo.search('hr.employee', params, function(err, employee) {
     if (err) { return console.log(err); }
     __odoo.get('hr.employee', employee, function (err, print) {
@@ -69,10 +32,6 @@ router.post('/odoo/employees', function(req, res, next) {
           name: print[i].name,
           barcode: print[i].barcode,
           user_id: print[i].user_id,
-          // biometric_id: employee[i].biometric_id,
-          // scan1: employee[i].scan1,
-          // scan2: employee[i].scan2,
-          // scan3: employee[i].scan3,
         };
         arr.push(e);
       }
@@ -87,15 +46,6 @@ router.post('/odoo/employee/update', function(req, res, next) {
   const post = req.body;
   let update_data = post['data[]'];
   let id = post['id[]'];
-
-  // update employee info
-  // const update_data = {
-  //   biometric_id: 12345,
-  //   scan1: 54321,
-  //   scan2: 09876,
-  //   scan3: 67890,
-  // };
-
   __odoo.update('hr.employee', 12, update_data, function (err, employee){
     if (!err){ console.log('success'); }
     else {console.log('error');}
@@ -128,46 +78,6 @@ router.post('/odoo/attendance/checkin', function(req, res, next) {
   });
 });
 
-router.post('/odoo/attendance/checkout', function(req, res, next) {
-  // const post = req.body;
-  // let data = detectNumeric(post['id']);
-  // let id = parseFloat(data);
-  // var update_params = {check_out: new Date().toUTCString()};
-  // var search_params = [['employee_id','=',id], ['check_out', '=', false]];
-
-  // __odoo.search('hr.attendance', search_params, function (err, employee){
-  //   if (!err){ 
-  //     const attendance_id = employee[0];
-
-  //     __odoo.update('hr.attendance', attendance_id, update_params, function (err, employee){
-  //       if (!err){
-  //         res.send({result: employee});
-  //       } else {console.log(err);}
-  //     });
-  //   }else {console.log(err);}
-  // });
-});
-
-// router.post('/odoo/attendance/check', function(req, res, next) {
-//   const post = req.body;
-//   let data = detectNumeric(post['id']);
-//   let id = parseFloat(data);
-
-//   let current_datetime = new Date();
-
-//   var params = [['employee_id','=',id], ['check_in', '<', current_datetime], ['check_out', '=', false]];
-
-//   __odoo.search('hr.attendance', params, function (err, employee){
-//     if (!err){ 
-//       if (employee.length > 0){
-//         res.send({checked_id: true, checked_out: false});        
-//       }else{
-//         res.send({checked_id: false, checked_out: false});
-//       }
-//     }else {console.log(err);}
-//   });
-// });
-
 router.post('/api/getUser', async function(req, res){
   let response = {
     userlist: [],
@@ -188,7 +98,7 @@ router.post('/api/getUser', async function(req, res){
     }
   }
   console.log('=================================================================')
-        console.log(response);
+  console.log(response);
   res.send({status: false, message: 'No message'});
 })
 
@@ -259,8 +169,6 @@ router.post('/api/login', async function(req, res, next) {
   console.log(data, id);
   const cond = [['employee_id','=',id], ['check_in', '<', current_datetime], ['check_out', '=', false]];
   const checkAttendance = await seachOdoo('hr.attendance', cond);
-  console.log('+++++++++++++++++++')
-  console.log(checkAttendance);
   if(checkAttendance.length){
     // checkout 
     const update_params = {check_out: new Date().toUTCString()};

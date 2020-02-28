@@ -11,11 +11,11 @@ var app = express();
 var Odoo = require('node-odoo');
 
 var odoo = new Odoo({
-  host: 'localhost',
+  host: '18.136.204.101',
   port: 8069,
   database: 'apollo_new_test',
-  username: 'apollo',
-  password: 'stratium'
+  username: 'apollo_admin',
+  password: 'U4J3@Lw2BwJTLbz8'
 });
 
 function odoo_connection(){
@@ -44,7 +44,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
